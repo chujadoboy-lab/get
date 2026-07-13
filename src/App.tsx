@@ -233,8 +233,9 @@ export default function App() {
       unpaidList: unpaidList.sort((a, b) => new Date(a.date) - new Date(b.date)), 
       pendingList: pendingList.sort((a, b) => new Date(a.deliveryDate) - new Date(b.deliveryDate)),
       readyToShipList: readyToShipList.sort((a, b) => new Date(a.date) - new Date(b.date)),
-      bannerList: bannerList.sort((a, b) => new Date(b.date) - new Date(a.date)),
-      lotteryList: lotteryList.sort((a, b) => new Date(b.date) - new Date(a.date)),
+      // 오래된 순(오름차순)으로 정렬: a - b
+      bannerList: bannerList.sort((a, b) => new Date(a.date) - new Date(b.date)),
+      lotteryList: lotteryList.sort((a, b) => new Date(a.date) - new Date(b.date)),
       availableBannerMonths: [...new Set(bannerList.map(b => b.month).filter(m => m !== '미상'))].sort((a, b) => new Date(b) - new Date(a)),
       availableLotteryMonths: [...new Set(lotteryList.map(l => l.month).filter(m => m !== '미상'))].sort((a, b) => new Date(b) - new Date(a))
     };
@@ -366,6 +367,7 @@ export default function App() {
                     </select>
                   )}
                 </div>
+                {/* max-h와 overflow-y-auto를 제거하여 스크롤 없이 전부 보이게 수정 */}
                 <div className="space-y-4">
                   {currentMonthItemSalesList.length > 0 ? (
                     currentMonthItemSalesList.map((item, idx) => {
@@ -864,7 +866,6 @@ function MonthlySalesChart({ data }) {
   const displayTicks = yTicks.length > 8 ? yTicks.filter((_, i) => i % 2 === 0) : yTicks;
 
   const getX = (index) => padding.left + (data.length > 1 ? (index / (data.length - 1)) * chartWidth : chartWidth / 2);
-  // Y축 최하단이 padding.top + chartHeight 에 정확히 맞도록 계산
   const getY = (val) => padding.top + chartHeight - ((val / yMax) * chartHeight);
 
   const points = data.map((d, i) => ({
@@ -915,35 +916,35 @@ function MonthlySalesChart({ data }) {
 
             {/* 마우스 오버 시 나타나는 세로 가이드라인 */}
             {hoveredIndex === i && (
-              <line x1={p.x} y1={padding.top} x2={p.x} y2={padding.top + chartHeight} stroke="#4f46e5" strokeWidth="1" strokeDasharray="4 4" strokeOpacity="0.5" />
+              <line x1={p.x} y1={padding.top} x2={p.x} y2={padding.top + chartHeight} stroke="#4f46e5" strokeWidth="2" strokeDasharray="4 4" strokeOpacity="0.5" />
             )}
 
-            {/* 원형 포인트 (크기 축소: 4px, 호버 시 6px) */}
+            {/* 원형 포인트 */}
             <circle
               cx={p.x}
               cy={p.y}
-              r={hoveredIndex === i ? "6" : "4"}
+              r={hoveredIndex === i ? "6" : "4"} 
               fill={hoveredIndex === i ? "#ffffff" : "#4f46e5"}
               stroke="#4f46e5"
-              strokeWidth="2.5"
+              strokeWidth="3"
               className="cursor-pointer transition-all duration-200"
               onMouseEnter={() => setHoveredIndex(i)}
               onMouseLeave={() => setHoveredIndex(null)}
             />
 
-            {/* 툴팁 (크기 및 폰트 축소) */}
+            {/* 툴팁 */}
             {hoveredIndex === i && (
               <g className="transition-all duration-200 pointer-events-none">
                 <rect
-                  x={p.x - 60}
-                  y={p.y - 45}
-                  width="120"
-                  height="34"
-                  rx="6"
+                  x={p.x - 70}
+                  y={p.y - 55}
+                  width="140"
+                  height="40"
+                  rx="8"
                   fill="#1e293b"
                   className="dark:fill-slate-700 shadow-xl"
                 />
-                <text x={p.x} y={p.y - 23} textAnchor="middle" fill="#ffffff" className="text-[13px] font-bold">
+                <text x={p.x} y={p.y - 28} textAnchor="middle" fill="#ffffff" className="text-[16px] font-bold">
                   {new Intl.NumberFormat('ko-KR').format(p.sales)}원
                 </text>
               </g>
