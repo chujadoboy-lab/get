@@ -366,7 +366,7 @@ export default function App() {
                     </select>
                   )}
                 </div>
-                <div className="space-y-4 max-h-[320px] overflow-y-auto pr-2 custom-scrollbar">
+                <div className="space-y-4">
                   {currentMonthItemSalesList.length > 0 ? (
                     currentMonthItemSalesList.map((item, idx) => {
                       const percentage = currentMonthItemSalesTotal > 0 ? (item.value / currentMonthItemSalesTotal) * 100 : 0;
@@ -404,8 +404,8 @@ export default function App() {
             </div>
 
             {/* 월별 매출 추이 */}
-            <div className="mt-6 flex-1 min-h-[350px]">
-              <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 h-full flex flex-col overflow-hidden">
+            <div className="mt-6">
+              <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 w-full flex flex-col">
                 <div className="flex justify-between items-center mb-4">
                   <h2 className="text-lg font-bold text-slate-800 dark:text-slate-200 flex items-center gap-2">
                     <BarChart3 className="w-5 h-5 text-indigo-500" />
@@ -421,7 +421,7 @@ export default function App() {
                     </select>
                   )}
                 </div>
-                <div className="flex-1 w-full relative pt-4 pb-2">
+                <div className="w-full relative pt-4 pb-2">
                   <MonthlySalesChart data={displayChartData} />
                 </div>
               </div>
@@ -838,9 +838,8 @@ function MonthlySalesChart({ data }) {
   }
 
   const width = 1000;
-  const height = 320; // 전체 높이를 살짝 키워 여유 확보
-  // 폰트를 줄였으므로 여백도 최적화. 하단(bottom) 여백을 충분히 주어 0원 선이 짤리지 않게 함.
-  const padding = { top: 30, right: 40, bottom: 50, left: 90 };
+  const height = 360; 
+  const padding = { top: 30, right: 40, bottom: 60, left: 90 };
   const chartWidth = width - padding.left - padding.right;
   const chartHeight = height - padding.top - padding.bottom;
 
@@ -879,9 +878,8 @@ function MonthlySalesChart({ data }) {
   const areaPath = `${linePath} L ${points[points.length-1]?.x} ${padding.top + chartHeight} L ${points[0]?.x} ${padding.top + chartHeight} Z`;
 
   return (
-    // overflow-visible로 설정하되, viewBox 내부에서 모든 요소가 렌더링되도록 좌표를 엄격히 관리
-    <div className="w-full h-full relative flex items-center justify-center min-h-[250px]">
-      <svg viewBox={`0 0 ${width} ${height}`} className="w-full h-full max-h-[350px]">
+    <div className="w-full relative flex items-center justify-center min-h-[250px]">
+      <svg viewBox={`0 0 ${width} ${height}`} className="w-full h-auto overflow-visible">
         <defs>
           <linearGradient id="colorSales" x1="0" y1="0" x2="0" y2="1">
             <stop offset="5%" stopColor="#4f46e5" stopOpacity={0.3}/>
