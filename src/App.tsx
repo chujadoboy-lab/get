@@ -834,13 +834,13 @@ function MonthlySalesChart({ data }) {
   const [hoveredIndex, setHoveredIndex] = useState(null);
 
   if (!data || data.length === 0) {
-    return <div className="flex items-center justify-center h-full text-slate-400 font-bold">표시할 데이터가 없습니다.</div>;
+    return <div className="flex items-center justify-center h-full text-slate-400 font-bold text-sm">표시할 데이터가 없습니다.</div>;
   }
 
   const width = 1000;
-  const height = 300;
-  // 하단 여백(bottom)을 60으로 넉넉하게 확보하여 글자 및 선이 잘리는 현상을 방지, 폰트가 커져서 left 여백도 110으로 확대
-  const padding = { top: 40, right: 60, bottom: 60, left: 110 };
+  const height = 320; // 전체 높이를 살짝 키워 여유 확보
+  // 폰트를 줄였으므로 여백도 최적화. 하단(bottom) 여백을 충분히 주어 0원 선이 짤리지 않게 함.
+  const padding = { top: 30, right: 40, bottom: 50, left: 90 };
   const chartWidth = width - padding.left - padding.right;
   const chartHeight = height - padding.top - padding.bottom;
 
@@ -865,6 +865,7 @@ function MonthlySalesChart({ data }) {
   const displayTicks = yTicks.length > 8 ? yTicks.filter((_, i) => i % 2 === 0) : yTicks;
 
   const getX = (index) => padding.left + (data.length > 1 ? (index / (data.length - 1)) * chartWidth : chartWidth / 2);
+  // Y축 최하단이 padding.top + chartHeight 에 정확히 맞도록 계산
   const getY = (val) => padding.top + chartHeight - ((val / yMax) * chartHeight);
 
   const points = data.map((d, i) => ({
@@ -875,15 +876,15 @@ function MonthlySalesChart({ data }) {
   }));
 
   const linePath = points.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x} ${p.y}`).join(' ');
-  const areaPath = `${linePath} L ${points[points.length-1]?.x} ${height - padding.bottom} L ${points[0]?.x} ${height - padding.bottom} Z`;
+  const areaPath = `${linePath} L ${points[points.length-1]?.x} ${padding.top + chartHeight} L ${points[0]?.x} ${padding.top + chartHeight} Z`;
 
   return (
-    // 크기를 유연하게 유지하면서 영역 바깥으로 나가는 것을 방지
-    <div className="w-full h-full relative flex items-center justify-center">
-      <svg viewBox={`0 0 ${width} ${height}`} className="w-full h-full max-h-[350px] overflow-visible">
+    // overflow-visible로 설정하되, viewBox 내부에서 모든 요소가 렌더링되도록 좌표를 엄격히 관리
+    <div className="w-full h-full relative flex items-center justify-center min-h-[250px]">
+      <svg viewBox={`0 0 ${width} ${height}`} className="w-full h-full max-h-[350px]">
         <defs>
           <linearGradient id="colorSales" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="5%" stopColor="#4f46e5" stopOpacity={0.25}/>
+            <stop offset="5%" stopColor="#4f46e5" stopOpacity={0.3}/>
             <stop offset="95%" stopColor="#4f46e5" stopOpacity={0}/>
           </linearGradient>
         </defs>
@@ -892,9 +893,10 @@ function MonthlySalesChart({ data }) {
         {displayTicks.map(val => {
           const y = getY(val);
           return (
-            <g key={val} className="text-slate-500 dark:text-slate-400 text-base font-bold"> {/* 폰트 크기 text-base로 확대 */}
+            // 폰트 크기 text-sm (품목별 매출 순위와 동일한 14px) 으로 축소
+            <g key={val} className="text-slate-400 dark:text-slate-500 text-sm font-bold">
               <line x1={padding.left} y1={y} x2={width - padding.right} y2={y} stroke="currentColor" strokeOpacity="0.15" strokeDasharray="4 4" />
-              <text x={padding.left - 15} y={y + 5} textAnchor="end" fill="currentColor">
+              <text x={padding.left - 15} y={y + 4} textAnchor="end" fill="currentColor">
                 {val === 0 ? '0원' : `${new Intl.NumberFormat('ko-KR').format(val / 10000)}만원`}
               </text>
             </g>
@@ -904,48 +906,48 @@ function MonthlySalesChart({ data }) {
         {/* 차트 영역(그라데이션) */}
         {data.length > 1 && <path d={areaPath} fill="url(#colorSales)" />}
 
-        {/* 차트 선 */}
-        <path d={linePath} fill="none" stroke="#4f46e5" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" /> {/* 선 두께 확대 */}
+        {/* 차트 선 (굵기를 4에서 2.5로 대폭 축소) */}
+        <path d={linePath} fill="none" stroke="#4f46e5" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
 
         {/* 데이터 포인트 및 인터랙션 */}
         {points.map((p, i) => (
           <g key={i}>
-            {/* X축 월 표시 (폰트 크기 text-base로 확대 및 y 위치 조금 하향) */}
-            <text x={p.x} y={height - 15} textAnchor="middle" className="text-slate-500 dark:text-slate-400 text-base font-bold" fill="currentColor">
+            {/* X축 월 표시 (폰트 크기 text-sm, Y 위치 조정) */}
+            <text x={p.x} y={height - 15} textAnchor="middle" className="text-slate-500 dark:text-slate-400 text-sm font-bold" fill="currentColor">
               {p.month.replace('-', '. ')}
             </text>
 
             {/* 마우스 오버 시 나타나는 세로 가이드라인 */}
             {hoveredIndex === i && (
-              <line x1={p.x} y1={padding.top} x2={p.x} y2={height - padding.bottom} stroke="#4f46e5" strokeWidth="2" strokeDasharray="4 4" strokeOpacity="0.5" />
+              <line x1={p.x} y1={padding.top} x2={p.x} y2={padding.top + chartHeight} stroke="#4f46e5" strokeWidth="1" strokeDasharray="4 4" strokeOpacity="0.5" />
             )}
 
-            {/* 원형 포인트 */}
+            {/* 원형 포인트 (크기 축소: 4px, 호버 시 6px) */}
             <circle
               cx={p.x}
               cy={p.y}
-              r={hoveredIndex === i ? "8" : "5"} // 포인트 크기 확대
+              r={hoveredIndex === i ? "6" : "4"}
               fill={hoveredIndex === i ? "#ffffff" : "#4f46e5"}
               stroke="#4f46e5"
-              strokeWidth="3"
+              strokeWidth="2.5"
               className="cursor-pointer transition-all duration-200"
               onMouseEnter={() => setHoveredIndex(i)}
               onMouseLeave={() => setHoveredIndex(null)}
             />
 
-            {/* 툴팁 (크기 및 폰트 더 확장) */}
+            {/* 툴팁 (크기 및 폰트 축소) */}
             {hoveredIndex === i && (
               <g className="transition-all duration-200 pointer-events-none">
                 <rect
-                  x={p.x - 70}
-                  y={p.y - 55}
-                  width="140"
-                  height="40"
-                  rx="8"
+                  x={p.x - 60}
+                  y={p.y - 45}
+                  width="120"
+                  height="34"
+                  rx="6"
                   fill="#1e293b"
                   className="dark:fill-slate-700 shadow-xl"
                 />
-                <text x={p.x} y={p.y - 28} textAnchor="middle" fill="#ffffff" className="text-[16px] font-bold"> {/* 툴팁 텍스트 크기 확대 */}
+                <text x={p.x} y={p.y - 23} textAnchor="middle" fill="#ffffff" className="text-[13px] font-bold">
                   {new Intl.NumberFormat('ko-KR').format(p.sales)}원
                 </text>
               </g>
