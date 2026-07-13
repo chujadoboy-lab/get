@@ -22,9 +22,9 @@ const mockData = [
   { 날짜: '2023-10-25', 매출: 150000, 결제방식: '카드', 진행상태: '완료', 납기예정일: '2023-10-26', 상호: '에이원컴퍼니', 연락처: '010-1111-2222', 품목: '현수막 50장', 후가공: '사방타공' },
   { 날짜: '2023-10-25', 매출: 320000, 결제방식: '미수', 진행상태: '대기', 납기예정일: '2023-10-28', 상호: '세종디자인', 연락처: '010-3333-4444', 품목: '라텍스 실사', 후가공: '무광코팅' },
   { 날짜: '2023-10-26', 매출: 450000, 결제방식: '미수', 진행상태: '대기', 납기예정일: '2023-10-30', 상호: '픽스디자인', 연락처: '010-7777-8888', 품목: '아크릴 현판', 후가공: '양면테이프' },
-  { 날짜: '2023-10-28', 매출: 550000, 결제방식: '미수', 진행상태: '대기', 납기예정일: '2023-11-02', 상호: 'LG전자', 연락처: '010-1234-5678', 품목: '대형 현수막', 후가공: '로프미싱' },
-  { 날짜: '2023-10-29', 매출: 120000, 결제방식: '카드', 진행상태: '완료', 납기예정일: '2023-10-30', 상호: '시청', 연락처: '010-9999-0000', 품목: '게시대현수막', 후가공: '각목' },
-  { 날짜: '2023-10-30', 매출: 80000, 결제방식: '무통장', 진행상태: '출고', 납기예정일: '2023-11-05', 상호: '구청', 연락처: '010-5555-6666', 품목: '추첨대행', 후가공: '-' },
+  { 날짜: '2023-10-28', 매출: 550000, 결제방식: '현금', 진행상태: '대기', 납기예정일: '2023-11-02', 상호: 'LG전자', 연락처: '010-1234-5678', 품목: '대형 현수막', 후가공: '로프미싱' },
+  { 날짜: '2023-10-29', 매출: 120000, 결제방식: '입금', 진행상태: '완료', 납기예정일: '2023-10-30', 상호: '시청', 연락처: '010-9999-0000', 품목: '게시대현수막', 후가공: '각목' },
+  { 날짜: '2023-10-30', 매출: 80000, 결제방식: '카드', 진행상태: '출고', 납기예정일: '2023-11-05', 상호: '구청', 연락처: '010-5555-6666', 품목: '추첨대행', 후가공: '-' },
   { 날짜: '2023-11-05', 매출: 620000, 결제방식: '카드', 진행상태: '완료', 납기예정일: '2023-11-08', 상호: '디자인샘터', 연락처: '010-2222-3333', 품목: '라텍스 실사', 후가공: '코팅' },
   { 날짜: '2023-12-10', 매출: 890000, 결제방식: '카드', 진행상태: '완료', 납기예정일: '2023-12-15', 상호: '베스트광고', 연락처: '010-4444-5555', 품목: '일반 현수막', 후가공: '사방타공' },
 ];
@@ -41,9 +41,9 @@ export default function App() {
   const [selectedDate, setSelectedDate] = useState('');
   const [selectedMonth, setSelectedMonth] = useState('');
   const [itemMonth, setItemMonth] = useState(''); 
+  const [chartYear, setChartYear] = useState('');
   const [bannerMonth, setBannerMonth] = useState('');
-  const [lotteryMonth, setLotteryMonth] = useState(''); // 추첨대행 월 필터 상태 추가
-  const [chartYear, setChartYear] = useState(''); 
+  const [lotteryMonth, setLotteryMonth] = useState('');
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [now, setNow] = useState(new Date()); 
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -129,24 +129,6 @@ export default function App() {
     return isNaN(num) ? 0 : num;
   };
 
-  const getStatusBadge = (status) => {
-    const base = "inline-flex items-center rounded-full font-bold px-2.5 py-0.5 text-xs";
-    if (status.includes('완료')) return `${base} bg-emerald-100 text-emerald-800 dark:bg-emerald-900/50 dark:text-emerald-300`;
-    if (status.includes('출고')) return `${base} bg-blue-100 text-blue-800 dark:bg-blue-900/50 dark:text-blue-300`;
-    if (status.includes('대기')) return `${base} bg-amber-100 text-amber-800 dark:bg-amber-900/50 dark:text-amber-300`;
-    return `${base} bg-slate-100 text-slate-800 dark:bg-slate-700 dark:text-slate-300`;
-  }
-
-  const getPaymentBadge = (payment) => {
-    const base = "inline-flex items-center rounded-full font-bold px-2.5 py-0.5 text-xs";
-    if (!payment) return '';
-    if (payment.includes('미수')) return `${base} bg-red-100 text-red-800 dark:bg-red-900/50 dark:text-red-300`;
-    if (payment.includes('카드')) return `${base} bg-teal-100 text-teal-800 dark:bg-teal-900/50 dark:text-teal-300`;
-    if (payment.includes('입금') || payment.includes('무통장')) return `${base} bg-indigo-100 text-indigo-800 dark:bg-indigo-900/50 dark:text-indigo-300`;
-    if (payment.includes('현금')) return `${base} bg-emerald-100 text-emerald-800 dark:bg-emerald-900/50 dark:text-emerald-300`;
-    return `${base} bg-slate-100 text-slate-800 dark:bg-slate-700 dark:text-slate-300`;
-  }
-
   const dashboardStats = useMemo(() => {
     let unpaidTotal = 0;
     const dailySalesMap = {};
@@ -156,9 +138,8 @@ export default function App() {
     const unpaidList = [];
     const pendingList = [];
     const readyToShipList = []; 
-    const bannerList = []; // 게시대현수막 전용 리스트
-    const lotteryList = []; // 추첨대행 전용 리스트
-    const yearsSet = new Set();
+    const bannerList = [];
+    const lotteryList = [];
 
     const getField = (row, possibleNames) => {
       const key = Object.keys(row).find(k => possibleNames.some(name => k.includes(name)));
@@ -168,6 +149,7 @@ export default function App() {
     const categorizeItem = (itemStr) => {
       if (!itemStr) return '기타';
       const str = itemStr.toString().replace(/\s/g, ''); 
+      
       if (str.includes('친환경')) return '친환경현수막';
       if (str.includes('게시대')) return '게시대 현수막';
       if (str.includes('현수막')) return '일반 현수막';
@@ -176,6 +158,7 @@ export default function App() {
       if (str.includes('배너')) return '배너';
       if (str.includes('인쇄물')) return '인쇄물';
       if (str.includes('추첨대행') || str.includes('추첨')) return '추첨대행';
+      
       return '기타';
     };
 
@@ -196,9 +179,6 @@ export default function App() {
       if (dateStr !== '미상') {
         const shortDate = dateStr.split(' ')[0];
         monthStr = shortDate.substring(0, 7);
-        const yearStr = shortDate.substring(0, 4);
-        
-        yearsSet.add(yearStr);
         dailySalesMap[shortDate] = (dailySalesMap[shortDate] || 0) + sales;
         monthlySalesMap[monthStr] = (monthlySalesMap[monthStr] || 0) + sales;
 
@@ -219,13 +199,13 @@ export default function App() {
       }
 
       if (status.includes('완료')) {
-        readyToShipList.push({ date: dateStr, company, contact, sales, item, deliveryDate, status });
+        readyToShipList.push({ date: dateStr, company, contact, sales, item, deliveryDate });
       }
 
-      // 게시대현수막과 추첨대행을 분리하여 리스트에 추가
       if (cleanItem.includes('게시대현수막')) {
         bannerList.push({ date: dateStr, month: monthStr, company, contact, sales, item, deliveryDate, status, payment });
-      } else if (cleanItem.includes('추첨대행')) {
+      }
+      if (cleanItem.includes('추첨대행') || cleanItem.includes('추첨')) {
         lotteryList.push({ date: dateStr, month: monthStr, company, contact, sales, item, deliveryDate, status, payment });
       }
     });
@@ -239,23 +219,24 @@ export default function App() {
       }
     });
 
-    const monthlySalesData = Object.entries(monthlySalesMap)
-      .map(([month, sales]) => ({ month, sales, year: month.substring(0, 4) }))
+    const monthlySalesDataAll = Object.entries(monthlySalesMap)
+      .map(([month, sales]) => ({ month, sales }))
       .sort((a, b) => a.month.localeCompare(b.month));
 
+    const availableChartYears = [...new Set(monthlySalesDataAll.map(d => d.month.substring(0, 4)))].sort((a, b) => b.localeCompare(a));
+
     return { 
-      dailySalesMap, monthlySalesMap, monthlyExpenseMap, monthlyItemSalesMap, monthlySalesData,
+      dailySalesMap, monthlySalesMap, monthlyExpenseMap, monthlyItemSalesMap, monthlySalesDataAll, availableChartYears,
       availableDates: Object.keys(dailySalesMap).sort((a, b) => new Date(b) - new Date(a)), 
       availableMonths: Object.keys(monthlySalesMap).sort((a, b) => new Date(b) - new Date(a)), 
-      availableYears: Array.from(yearsSet).sort((a, b) => b.localeCompare(a)),
       unpaidTotal, 
       unpaidList: unpaidList.sort((a, b) => new Date(a.date) - new Date(b.date)), 
       pendingList: pendingList.sort((a, b) => new Date(a.deliveryDate) - new Date(b.deliveryDate)),
       readyToShipList: readyToShipList.sort((a, b) => new Date(a.date) - new Date(b.date)),
       bannerList: bannerList.sort((a, b) => new Date(b.date) - new Date(a.date)),
-      lotteryList: lotteryList.sort((a, b) => new Date(b.date) - new Date(a.date)), // 추첨대행 리스트
+      lotteryList: lotteryList.sort((a, b) => new Date(b.date) - new Date(a.date)),
       availableBannerMonths: [...new Set(bannerList.map(b => b.month).filter(m => m !== '미상'))].sort((a, b) => new Date(b) - new Date(a)),
-      availableLotteryMonths: [...new Set(lotteryList.map(l => l.month).filter(m => m !== '미상'))].sort((a, b) => new Date(b) - new Date(a)) // 추첨대행 월 목록
+      availableLotteryMonths: [...new Set(lotteryList.map(l => l.month).filter(m => m !== '미상'))].sort((a, b) => new Date(b) - new Date(a))
     };
   }, [salesData, expenseData]);
 
@@ -263,27 +244,33 @@ export default function App() {
     if (dashboardStats.availableDates.length > 0) {
       const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
       const thisMonthStr = todayStr.substring(0, 7);
-      const thisYearStr = todayStr.substring(0, 4);
       
       if (!selectedDate) setSelectedDate(dashboardStats.availableDates.includes(todayStr) ? todayStr : dashboardStats.availableDates[0]);
       if (!selectedMonth) setSelectedMonth(thisMonthStr);
       if (!itemMonth) setItemMonth(dashboardStats.availableMonths.includes(thisMonthStr) ? thisMonthStr : dashboardStats.availableMonths[0]); 
-      if (!chartYear) setChartYear(dashboardStats.availableYears.includes(thisYearStr) ? thisYearStr : dashboardStats.availableYears[0]);
     }
-  }, [dashboardStats.availableDates, dashboardStats.availableMonths, dashboardStats.availableYears, now, itemMonth, chartYear]);
+  }, [dashboardStats.availableDates, dashboardStats.availableMonths, now, itemMonth]);
 
-  // 배너 및 추첨대행 초기 월 설정
   useEffect(() => {
-    const thisMonthStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
-    
+    if (dashboardStats.availableChartYears.length > 0 && !chartYear) {
+      const thisYearStr = now.getFullYear().toString();
+      setChartYear(dashboardStats.availableChartYears.includes(thisYearStr) ? thisYearStr : dashboardStats.availableChartYears[0]);
+    }
+  }, [dashboardStats.availableChartYears, now, chartYear]);
+
+  useEffect(() => {
     if (dashboardStats.availableBannerMonths.length > 0 && !bannerMonth) {
+      const thisMonthStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
       setBannerMonth(dashboardStats.availableBannerMonths.includes(thisMonthStr) ? thisMonthStr : dashboardStats.availableBannerMonths[0]);
     }
-    
+  }, [dashboardStats.availableBannerMonths, now, bannerMonth]);
+
+  useEffect(() => {
     if (dashboardStats.availableLotteryMonths.length > 0 && !lotteryMonth) {
+      const thisMonthStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
       setLotteryMonth(dashboardStats.availableLotteryMonths.includes(thisMonthStr) ? thisMonthStr : dashboardStats.availableLotteryMonths[0]);
     }
-  }, [dashboardStats.availableBannerMonths, dashboardStats.availableLotteryMonths, now, bannerMonth, lotteryMonth]);
+  }, [dashboardStats.availableLotteryMonths, now, lotteryMonth]);
 
   const displayTodaySales = dashboardStats.dailySalesMap[selectedDate] || 0;
   const displayMonthlySales = dashboardStats.monthlySalesMap[selectedMonth] || 0;
@@ -296,10 +283,9 @@ export default function App() {
     .sort((a, b) => b.value - a.value);
   const currentMonthItemSalesTotal = currentMonthItemSalesList.reduce((acc, curr) => acc + curr.value, 0);
 
+  const displayChartData = dashboardStats.monthlySalesDataAll.filter(d => d.month.startsWith(chartYear));
   const displayBannerList = dashboardStats.bannerList.filter(b => b.month === bannerMonth);
-  const displayLotteryList = dashboardStats.lotteryList.filter(l => l.month === lotteryMonth); // 추첨대행 리스트 필터링
-  
-  const chartDisplayData = dashboardStats.monthlySalesData.filter(d => d.year === chartYear);
+  const displayLotteryList = dashboardStats.lotteryList.filter(l => l.month === lotteryMonth);
 
   const formattedDate = now.toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' });
   const formattedTime = now.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
@@ -309,9 +295,24 @@ export default function App() {
     { id: 'unpaid', label: '미수금 목록', icon: <CreditCard className="w-5 h-5" />, count: dashboardStats.unpaidList.length },
     { id: 'readyToShip', label: '출고 대기 목록', icon: <CheckCircle2 className="w-5 h-5" />, count: dashboardStats.readyToShipList.length },
     { id: 'pending', label: '작업 대기 목록', icon: <ListTodo className="w-5 h-5" />, count: dashboardStats.pendingList.length },
-    { id: 'banner', label: '게시대 현수막', icon: <Flag className="w-5 h-5" />, count: displayBannerList.length }, 
-    { id: 'lottery', label: '추첨대행', icon: <Ticket className="w-5 h-5" />, count: displayLotteryList.length }, // 추첨대행 카테고리 추가
+    { id: 'banner', label: '게시대 현수막', icon: <Flag className="w-5 h-5" />, count: displayBannerList.length },
+    { id: 'lottery', label: '추첨대행', icon: <Ticket className="w-5 h-5" />, count: displayLotteryList.length },
   ];
+
+  const getStatusBadge = (status) => {
+    if (status.includes('완료')) return 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/50 dark:text-emerald-300';
+    if (status.includes('대기')) return 'bg-amber-100 text-amber-800 dark:bg-amber-900/50 dark:text-amber-300';
+    if (status.includes('출고')) return 'bg-blue-100 text-blue-800 dark:bg-blue-900/50 dark:text-blue-300';
+    return 'bg-slate-100 text-slate-800 dark:bg-slate-700 dark:text-slate-300';
+  };
+
+  const getPaymentBadge = (payment) => {
+    if (payment.includes('미수')) return 'bg-red-100 text-red-800 dark:bg-red-900/50 dark:text-red-300 border border-red-200 dark:border-red-800';
+    if (payment.includes('카드')) return 'bg-teal-100 text-teal-800 dark:bg-teal-900/50 dark:text-teal-300 border border-teal-200 dark:border-teal-800';
+    if (payment.includes('입금') || payment.includes('무통장')) return 'bg-indigo-100 text-indigo-800 dark:bg-indigo-900/50 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800';
+    if (payment.includes('현금')) return 'bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-300 border border-green-200 dark:border-green-800';
+    return 'bg-slate-100 text-slate-800 dark:bg-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-600';
+  };
 
   if (loading) {
     return <div className="flex items-center justify-center h-screen bg-slate-50 dark:bg-slate-900 transition-colors"><RefreshCcw className="w-12 h-12 text-blue-500 animate-spin" /></div>;
@@ -347,6 +348,7 @@ export default function App() {
               <StatCard title="총 미수금액" value={dashboardStats.unpaidTotal} icon={<AlertCircle className="w-6 h-6 text-red-500" />} color="bg-red-50 dark:bg-red-900/30" valueColor="text-red-600 dark:text-red-400" />
             </div>
 
+            {/* 품목별 매출 순위 */}
             <div className="mt-6">
               <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700">
                 <div className="flex justify-between items-center mb-6">
@@ -401,25 +403,26 @@ export default function App() {
               </div>
             </div>
 
+            {/* 월별 매출 추이 */}
             <div className="mt-6 flex-1 min-h-[350px]">
-              <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 h-full flex flex-col">
+              <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 h-full flex flex-col overflow-hidden">
                 <div className="flex justify-between items-center mb-4">
                   <h2 className="text-lg font-bold text-slate-800 dark:text-slate-200 flex items-center gap-2">
                     <BarChart3 className="w-5 h-5 text-indigo-500" />
                     월별 매출 추이
                   </h2>
-                  {dashboardStats.availableYears.length > 0 && (
+                  {dashboardStats.availableChartYears.length > 0 && (
                     <select 
                       value={chartYear} 
                       onChange={e => setChartYear(e.target.value)} 
                       className="text-sm border border-slate-200 dark:border-slate-600 rounded-lg px-3 py-1.5 bg-slate-50 dark:bg-slate-700 text-slate-900 dark:text-slate-100 font-bold outline-none cursor-pointer"
                     >
-                      {dashboardStats.availableYears.map(y => <option key={y} value={y}>{y}년</option>)}
+                      {dashboardStats.availableChartYears.map(y => <option key={y} value={y}>{y}년</option>)}
                     </select>
                   )}
                 </div>
                 <div className="flex-1 w-full relative pt-4 pb-2">
-                  <MonthlySalesChart data={chartDisplayData} />
+                  <MonthlySalesChart data={displayChartData} />
                 </div>
               </div>
             </div>
@@ -570,7 +573,9 @@ export default function App() {
                     dashboardStats.pendingList.map((item, idx) => (
                       <tr key={idx} className="hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors bg-white dark:bg-slate-800">
                         <td className={`whitespace-nowrap ${isFullscreen ? 'px-6 py-2' : 'px-4 py-3'}`}>
-                          <span className={getStatusBadge(item.status)}>{item.status}</span>
+                          <span className={`inline-flex items-center rounded-full font-bold bg-amber-100 dark:bg-amber-900/50 text-amber-800 dark:text-amber-300 ${isFullscreen ? 'gap-1.5 py-1 px-3 text-[16px]' : 'gap-1.5 py-1 px-3 text-xs'}`}>
+                            {item.status}
+                          </span>
                         </td>
                         <td className={`font-bold whitespace-nowrap ${isFullscreen ? 'px-6 py-2 text-[18px]' : 'px-4 py-3 text-sm'}`}>{item.deliveryDate}</td>
                         <td className={`font-bold whitespace-nowrap ${isFullscreen ? 'px-6 py-2 text-[18px]' : 'px-4 py-3 text-sm'}`}>{item.company}</td>
@@ -593,7 +598,7 @@ export default function App() {
         return (
           <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 flex flex-col w-full h-full min-h-[500px]">
             <div className="flex justify-between items-center mb-4 shrink-0">
-              <h2 className="text-lg font-bold text-amber-600 dark:text-amber-400 flex items-center gap-2">
+              <h2 className="text-lg font-bold text-indigo-600 dark:text-indigo-400 flex items-center gap-2">
                 <Flag className="w-5 h-5" />
                 게시대 현수막
               </h2>
@@ -607,7 +612,7 @@ export default function App() {
                     {dashboardStats.availableBannerMonths.map(m => <option key={m} value={m}>{m}월</option>)}
                   </select>
                 )}
-                <span className="bg-amber-100 dark:bg-amber-900/50 text-amber-800 dark:text-amber-300 text-sm font-black px-4 py-1.5 rounded-full shadow-sm">
+                <span className="bg-indigo-100 dark:bg-indigo-900/50 text-indigo-800 dark:text-indigo-300 text-sm font-black px-4 py-1.5 rounded-full shadow-sm">
                   {displayBannerList.length}건
                 </span>
               </div>
@@ -630,22 +635,26 @@ export default function App() {
                   {displayBannerList.map((item, idx) => (
                     <tr key={idx} className="hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
                       <td className="py-3 px-4 text-sm font-bold text-slate-900 dark:text-slate-100 whitespace-nowrap">{item.date}</td>
-                      <td className="py-3 px-4 text-sm font-bold text-slate-900 dark:text-slate-100 whitespace-nowrap">
-                        <span className={getStatusBadge(item.status)}>{item.status}</span>
+                      <td className="py-3 px-4 text-sm font-bold whitespace-nowrap">
+                        <span className={`inline-flex items-center rounded-full font-bold px-2.5 py-0.5 text-xs ${getStatusBadge(item.status)}`}>
+                          {item.status}
+                        </span>
                       </td>
                       <td className="py-3 px-4 text-sm font-bold text-slate-900 dark:text-slate-100 whitespace-nowrap">{item.company}</td>
                       <td className="py-3 px-4 text-sm font-bold text-slate-900 dark:text-slate-100 whitespace-nowrap">{item.contact}</td>
                       <td className="py-3 px-4 text-sm font-bold text-slate-900 dark:text-slate-100 whitespace-nowrap">{item.item}</td>
                       <td className="py-3 px-4 text-sm font-bold text-slate-900 dark:text-slate-100 whitespace-nowrap">{item.deliveryDate}</td>
                       <td className="py-3 px-4 text-sm font-bold text-slate-900 dark:text-slate-100 text-right whitespace-nowrap">{new Intl.NumberFormat('ko-KR').format(item.sales)}원</td>
-                      <td className="py-3 px-4 text-sm font-bold text-slate-900 dark:text-slate-100 whitespace-nowrap">
-                        <span className={getPaymentBadge(item.payment)}>{item.payment}</span>
+                      <td className="py-3 px-4 text-sm font-bold whitespace-nowrap">
+                        <span className={`inline-flex items-center rounded-lg font-bold px-2 py-1 text-xs ${getPaymentBadge(item.payment)}`}>
+                          {item.payment}
+                        </span>
                       </td>
                     </tr>
                   ))}
                   {displayBannerList.length === 0 && (
                     <tr className="bg-white dark:bg-slate-800">
-                      <td colSpan="8" className="text-center text-slate-500 dark:text-slate-400 font-bold py-10 text-sm">해당 월에 등록된 게시대 현수막 내역이 없습니다.</td>
+                      <td colSpan="8" className="text-center text-slate-500 dark:text-slate-400 font-bold py-10 text-sm">해당 월에 등록된 현수막 내역이 없습니다.</td>
                     </tr>
                   )}
                 </tbody>
@@ -658,7 +667,7 @@ export default function App() {
         return (
           <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 flex flex-col w-full h-full min-h-[500px]">
             <div className="flex justify-between items-center mb-4 shrink-0">
-              <h2 className="text-lg font-bold text-fuchsia-600 dark:text-fuchsia-400 flex items-center gap-2">
+              <h2 className="text-lg font-bold text-amber-600 dark:text-amber-400 flex items-center gap-2">
                 <Ticket className="w-5 h-5" />
                 추첨대행
               </h2>
@@ -672,7 +681,7 @@ export default function App() {
                     {dashboardStats.availableLotteryMonths.map(m => <option key={m} value={m}>{m}월</option>)}
                   </select>
                 )}
-                <span className="bg-fuchsia-100 dark:bg-fuchsia-900/50 text-fuchsia-800 dark:text-fuchsia-300 text-sm font-black px-4 py-1.5 rounded-full shadow-sm">
+                <span className="bg-amber-100 dark:bg-amber-900/50 text-amber-800 dark:text-amber-300 text-sm font-black px-4 py-1.5 rounded-full shadow-sm">
                   {displayLotteryList.length}건
                 </span>
               </div>
@@ -695,16 +704,20 @@ export default function App() {
                   {displayLotteryList.map((item, idx) => (
                     <tr key={idx} className="hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
                       <td className="py-3 px-4 text-sm font-bold text-slate-900 dark:text-slate-100 whitespace-nowrap">{item.date}</td>
-                      <td className="py-3 px-4 text-sm font-bold text-slate-900 dark:text-slate-100 whitespace-nowrap">
-                        <span className={getStatusBadge(item.status)}>{item.status}</span>
+                      <td className="py-3 px-4 text-sm font-bold whitespace-nowrap">
+                        <span className={`inline-flex items-center rounded-full font-bold px-2.5 py-0.5 text-xs ${getStatusBadge(item.status)}`}>
+                          {item.status}
+                        </span>
                       </td>
                       <td className="py-3 px-4 text-sm font-bold text-slate-900 dark:text-slate-100 whitespace-nowrap">{item.company}</td>
                       <td className="py-3 px-4 text-sm font-bold text-slate-900 dark:text-slate-100 whitespace-nowrap">{item.contact}</td>
                       <td className="py-3 px-4 text-sm font-bold text-slate-900 dark:text-slate-100 whitespace-nowrap">{item.item}</td>
                       <td className="py-3 px-4 text-sm font-bold text-slate-900 dark:text-slate-100 whitespace-nowrap">{item.deliveryDate}</td>
                       <td className="py-3 px-4 text-sm font-bold text-slate-900 dark:text-slate-100 text-right whitespace-nowrap">{new Intl.NumberFormat('ko-KR').format(item.sales)}원</td>
-                      <td className="py-3 px-4 text-sm font-bold text-slate-900 dark:text-slate-100 whitespace-nowrap">
-                        <span className={getPaymentBadge(item.payment)}>{item.payment}</span>
+                      <td className="py-3 px-4 text-sm font-bold whitespace-nowrap">
+                        <span className={`inline-flex items-center rounded-lg font-bold px-2 py-1 text-xs ${getPaymentBadge(item.payment)}`}>
+                          {item.payment}
+                        </span>
                       </td>
                     </tr>
                   ))}
@@ -718,7 +731,7 @@ export default function App() {
             </div>
           </div>
         );
-        
+
       default:
         return null;
     }
@@ -816,6 +829,7 @@ function StatCard({ title, value, icon, color, valueColor = "text-slate-900 dark
   );
 }
 
+// 🌟 월별 매출 추이 꺾은선 차트 컴포넌트
 function MonthlySalesChart({ data }) {
   const [hoveredIndex, setHoveredIndex] = useState(null);
 
@@ -825,12 +839,30 @@ function MonthlySalesChart({ data }) {
 
   const width = 1000;
   const height = 300;
-  const padding = { top: 40, right: 60, bottom: 40, left: 80 };
+  // 하단 여백(bottom)을 60으로 넉넉하게 확보하여 글자 및 선이 잘리는 현상을 방지, 폰트가 커져서 left 여백도 110으로 확대
+  const padding = { top: 40, right: 60, bottom: 60, left: 110 };
   const chartWidth = width - padding.left - padding.right;
   const chartHeight = height - padding.top - padding.bottom;
 
   const maxVal = Math.max(...data.map(d => d.sales), 100000);
-  const yMax = maxVal * 1.15;
+  
+  // 자동 스텝 계산 (최대값에 맞춰 500만원, 1000만원 등 예쁜 단위로 Y축 분할)
+  let step = 1000000; // 기본 100만
+  if (maxVal > 50000000) step = 10000000; // 1000만
+  else if (maxVal > 20000000) step = 5000000; // 500만 (사용자 요청 단위: 1000, 1500, 2000...)
+  else if (maxVal > 10000000) step = 2500000; // 250만
+  else if (maxVal > 5000000) step = 1000000; // 100만
+  else step = 500000; // 50만
+
+  const yMax = Math.ceil(maxVal / step) * step * 1.15; // 상단 여백 15%
+
+  // Y축 라벨 구하기
+  const yTicks = [];
+  for (let i = 0; i <= yMax; i += step) {
+    yTicks.push(i);
+  }
+  // 너무 많으면 필터링
+  const displayTicks = yTicks.length > 8 ? yTicks.filter((_, i) => i % 2 === 0) : yTicks;
 
   const getX = (index) => padding.left + (data.length > 1 ? (index / (data.length - 1)) * chartWidth : chartWidth / 2);
   const getY = (val) => padding.top + chartHeight - ((val / yMax) * chartHeight);
@@ -846,8 +878,9 @@ function MonthlySalesChart({ data }) {
   const areaPath = `${linePath} L ${points[points.length-1]?.x} ${height - padding.bottom} L ${points[0]?.x} ${height - padding.bottom} Z`;
 
   return (
-    <div className="w-full h-full min-h-[250px] relative flex items-center justify-center">
-      <svg viewBox={`0 0 ${width} ${height}`} className="w-full h-full max-h-[350px]">
+    // 크기를 유연하게 유지하면서 영역 바깥으로 나가는 것을 방지
+    <div className="w-full h-full relative flex items-center justify-center">
+      <svg viewBox={`0 0 ${width} ${height}`} className="w-full h-full max-h-[350px] overflow-visible">
         <defs>
           <linearGradient id="colorSales" x1="0" y1="0" x2="0" y2="1">
             <stop offset="5%" stopColor="#4f46e5" stopOpacity={0.25}/>
@@ -855,36 +888,43 @@ function MonthlySalesChart({ data }) {
           </linearGradient>
         </defs>
 
-        {[0, 0.33, 0.66, 1].map(ratio => {
-          const y = padding.top + chartHeight * ratio;
-          const val = yMax * (1 - ratio);
+        {/* Y축 기준선 */}
+        {displayTicks.map(val => {
+          const y = getY(val);
           return (
-            <g key={ratio} className="text-slate-400 dark:text-slate-500 text-xs font-bold">
+            <g key={val} className="text-slate-500 dark:text-slate-400 text-base font-bold"> {/* 폰트 크기 text-base로 확대 */}
               <line x1={padding.left} y1={y} x2={width - padding.right} y2={y} stroke="currentColor" strokeOpacity="0.15" strokeDasharray="4 4" />
-              <text x={padding.left - 15} y={y + 4} textAnchor="end" fill="currentColor">
-                {new Intl.NumberFormat('ko-KR', { notation: "compact", maximumFractionDigits: 1 }).format(val)}원
+              <text x={padding.left - 15} y={y + 5} textAnchor="end" fill="currentColor">
+                {val === 0 ? '0원' : `${new Intl.NumberFormat('ko-KR').format(val / 10000)}만원`}
               </text>
             </g>
           );
         })}
 
+        {/* 차트 영역(그라데이션) */}
         {data.length > 1 && <path d={areaPath} fill="url(#colorSales)" />}
-        <path d={linePath} fill="none" stroke="#4f46e5" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
 
+        {/* 차트 선 */}
+        <path d={linePath} fill="none" stroke="#4f46e5" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" /> {/* 선 두께 확대 */}
+
+        {/* 데이터 포인트 및 인터랙션 */}
         {points.map((p, i) => (
           <g key={i}>
-            <text x={p.x} y={height - 15} textAnchor="middle" className="text-slate-500 dark:text-slate-400 text-xs font-bold" fill="currentColor">
+            {/* X축 월 표시 (폰트 크기 text-base로 확대 및 y 위치 조금 하향) */}
+            <text x={p.x} y={height - 15} textAnchor="middle" className="text-slate-500 dark:text-slate-400 text-base font-bold" fill="currentColor">
               {p.month.replace('-', '. ')}
             </text>
 
+            {/* 마우스 오버 시 나타나는 세로 가이드라인 */}
             {hoveredIndex === i && (
-              <line x1={p.x} y1={padding.top} x2={p.x} y2={height - padding.bottom} stroke="#4f46e5" strokeWidth="1" strokeDasharray="4 4" strokeOpacity="0.5" />
+              <line x1={p.x} y1={padding.top} x2={p.x} y2={height - padding.bottom} stroke="#4f46e5" strokeWidth="2" strokeDasharray="4 4" strokeOpacity="0.5" />
             )}
 
+            {/* 원형 포인트 */}
             <circle
               cx={p.x}
               cy={p.y}
-              r={hoveredIndex === i ? "6" : "4"}
+              r={hoveredIndex === i ? "8" : "5"} // 포인트 크기 확대
               fill={hoveredIndex === i ? "#ffffff" : "#4f46e5"}
               stroke="#4f46e5"
               strokeWidth="3"
@@ -893,18 +933,19 @@ function MonthlySalesChart({ data }) {
               onMouseLeave={() => setHoveredIndex(null)}
             />
 
+            {/* 툴팁 (크기 및 폰트 더 확장) */}
             {hoveredIndex === i && (
               <g className="transition-all duration-200 pointer-events-none">
                 <rect
-                  x={p.x - 55}
-                  y={p.y - 45}
-                  width="110"
-                  height="30"
-                  rx="6"
+                  x={p.x - 70}
+                  y={p.y - 55}
+                  width="140"
+                  height="40"
+                  rx="8"
                   fill="#1e293b"
                   className="dark:fill-slate-700 shadow-xl"
                 />
-                <text x={p.x} y={p.y - 25} textAnchor="middle" fill="#ffffff" className="text-[13px] font-bold">
+                <text x={p.x} y={p.y - 28} textAnchor="middle" fill="#ffffff" className="text-[16px] font-bold"> {/* 툴팁 텍스트 크기 확대 */}
                   {new Intl.NumberFormat('ko-KR').format(p.sales)}원
                 </text>
               </g>
