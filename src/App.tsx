@@ -891,8 +891,7 @@ function MonthlySalesChart({ data }) {
         {displayTicks.map(val => {
           const y = getY(val);
           return (
-            // 폰트 크기 text-sm (품목별 매출 순위와 동일한 14px) 으로 축소
-            <g key={val} className="text-slate-400 dark:text-slate-500 text-sm font-bold">
+            <g key={val} className="text-slate-500 dark:text-slate-400 text-[13px]">
               <line x1={padding.left} y1={y} x2={width - padding.right} y2={y} stroke="currentColor" strokeOpacity="0.15" strokeDasharray="4 4" />
               <text x={padding.left - 15} y={y + 4} textAnchor="end" fill="currentColor">
                 {val === 0 ? '0원' : `${new Intl.NumberFormat('ko-KR').format(val / 10000)}만원`}
@@ -910,8 +909,7 @@ function MonthlySalesChart({ data }) {
         {/* 데이터 포인트 및 인터랙션 */}
         {points.map((p, i) => (
           <g key={i}>
-            {/* X축 월 표시 (폰트 크기 text-sm, Y 위치 조정) */}
-            <text x={p.x} y={height - 15} textAnchor="middle" className="text-slate-500 dark:text-slate-400 text-sm font-bold" fill="currentColor">
+            <text x={p.x} y={height - 15} textAnchor="middle" className="text-slate-500 dark:text-slate-400 text-[13px]" fill="currentColor">
               {p.month.replace('-', '. ')}
             </text>
 
